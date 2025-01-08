@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
-use anchor_spl::{associated_token::AssociatedToken,
-     token_interface::{Mint, TokenAccount, TokenInterface}};
+use anchor_spl::{associated_token::AssociatedToken, 
+     token_interface::{self, Mint, TokenAccount, TokenInterface, TransferChecked}};
 
 use crate::state::{ChitFund, Participant};
 use crate::constants::*;
@@ -81,26 +81,42 @@ pub fn join_chit_fund(ctx: Context<JoinChitFund>) -> Result<()> {
     participant.borrowed_cycle = None;
 
     // Update chit fund participants list
-    chit_fund.participants[chit_fund.participants_count as usize] = ctx.accounts.user.key();
+    let current_count = chit_fund.participants_count as usize;
+    chit_fund.participants[current_count] = ctx.accounts.user.key();
     chit_fund.participants_count += 1;
 
     // Transfer collateral
-    let transfer_accounts = anchor_spl::token_interface::Transfer {
+    let transfer_cpi_accounts = TransferChecked {
         from: ctx.accounts.user_token_account.to_account_info(),
         to: ctx.accounts.collateral_vault.to_account_info(),
         authority: ctx.accounts.user.to_account_info(),
+        mint: ctx.accounts.mint.to_account_info(),
     };
+
+    let cpi_program = ctx.accounts.token_program.to_account_info();
     let cpi_ctx = CpiContext::new(
-        ctx.accounts.token_program.to_account_info(),
-        transfer_accounts,
+        cpi_program,
+        transfer_cpi_accounts
     );
-    anchor_spl::token_interface::transfer(cpi_ctx, chit_fund.collateral_requirement)?;
+
+    let decimals = ctx.accounts.mint.decimals;
+    token_interface::transfer_checked(cpi_ctx, chit_fund.collateral_requirement,decimals)?;
+
+    match ctx.accounts.mint.to_account_info().key(){
+        key if key == participant.usdc_address =>{
+            chit_fund.total_contribution_amount += chit_fund.collateral_requirement;
+            participant.total_contributed += chit_fund.collateral_requirement;
+
+        }
+        _ => return Err(ChitFundError::InvalidContributionMint.into())
+    }
 
     emit!(ParticipantJoined {
         chit_fund: chit_fund.key(),
         participant: participant.key(),
         owner: participant.owner,
         join_time: participant.join_time,
+        collateral_amount: chit_fund.collateral_requirement, 
     });
 
     Ok(())
@@ -112,5 +128,6 @@ pub struct ParticipantJoined {
     pub participant: Pubkey,
     pub owner: Pubkey,
     pub join_time: i64,
+    pub collateral_amount: u64,
 }
 

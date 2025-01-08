@@ -17,6 +17,16 @@ pub mod rosca {
         initialize_chit_fund(ctx, contribution_amount, cycle_duration, total_cycles, collateral_requirement, max_participants, disbursement_schedule)
     }
 
+    pub fn join_chit(ctx: Context<JoinChitFund>) -> Result<()> {
+        join_chit_fund(ctx)
+    }
+
+    pub fn contribution(ctx: Context<MakeContribution>) -> Result<()> {
+        make_contribution(ctx)
+    }
+
+    
+
     
 
 }

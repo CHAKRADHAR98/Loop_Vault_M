@@ -46,4 +46,6 @@ pub enum ChitFundError {
     CycleDurationTooShort,
     #[msg("Invalid cycle duration")]
     InvalidCycleDuration,
+    #[msg("Insufficient funds in user's token account for contribution")]
+    InsufficientFunds,
 }
