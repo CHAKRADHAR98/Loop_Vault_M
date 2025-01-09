@@ -48,4 +48,6 @@ pub enum ChitFundError {
     InvalidCycleDuration,
     #[msg("Insufficient funds in user's token account for contribution")]
     InsufficientFunds,
+    #[msg("No eligible borrowers found in this cycle")]
+    NoEligibleBorrowers,
 }

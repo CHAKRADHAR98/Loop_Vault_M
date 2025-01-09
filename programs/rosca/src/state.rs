@@ -21,6 +21,7 @@ pub struct ChitFund {
     // Participant tracking
     pub participants: [Pubkey; MAX_PARTICIPANTS],
     pub participants_count: u8,
+    pub borrowed_participants: [bool; MAX_PARTICIPANTS],
     
     // Financial tracking
     pub disbursement_schedule: [u64; MAX_CYCLES],

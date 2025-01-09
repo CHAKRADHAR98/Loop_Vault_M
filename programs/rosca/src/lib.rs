@@ -25,7 +25,9 @@ pub mod rosca {
         make_contribution(ctx)
     }
 
-    
+    pub fn disburse(ctx: Context<DisburseFunds>) -> Result<()> {
+        disburse_funds(ctx)
+    }    
 
     
 
