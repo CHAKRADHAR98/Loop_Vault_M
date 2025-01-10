@@ -50,4 +50,6 @@ pub enum ChitFundError {
     InsufficientFunds,
     #[msg("No eligible borrowers found in this cycle")]
     NoEligibleBorrowers,
+    #[msg("Cannot withdraw collateral before completing the borrowing cycle")]
+    WithdrawBeforeBorrowing,
 }

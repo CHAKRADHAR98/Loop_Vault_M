@@ -29,6 +29,10 @@ pub mod rosca {
         disburse_funds(ctx)
     }    
 
+    pub fn withdraw(ctx: Context<WithdrawCollateral>) -> Result<()> {
+        withdraw_collateral(ctx)
+    }
+
     
 
 }

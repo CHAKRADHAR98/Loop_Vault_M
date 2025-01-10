@@ -20,7 +20,7 @@ pub struct DisburseFunds<'info> {
         constraint = chit_fund.is_active @ ChitFundError::ChitFundInactive,
         constraint = Clock::get()?.unix_timestamp >= chit_fund.last_disbursement_time + chit_fund.cycle_duration @ ChitFundError::CycleNotComplete,
     )]
-    pub chit_fund: Account<'info, ChitFund>,
+    pub chit_fund: Box<Account<'info, ChitFund>>,
     
     #[account(
         mut,
@@ -28,7 +28,7 @@ pub struct DisburseFunds<'info> {
         bump,
         constraint = contribution_vault.mint == mint.key() @ ChitFundError::InvalidContributionMint,
     )]
-    pub contribution_vault: InterfaceAccount<'info, TokenAccount>,
+    pub contribution_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut, 
@@ -60,7 +60,7 @@ pub fn disburse_funds(ctx: Context<DisburseFunds>) -> Result<()> {
     // Check if there are any participants
     require!(
         chit_fund.participants_count > 0, 
-        ChitFundError::ParticipantNotFound
+        ChitFundError::ParticipantNotFound  
     );
 
     // Create vector to store eligible borrowers

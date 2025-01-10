@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use crate::constants::*;
 
 #[account]
-#[derive(InitSpace, Debug)]
+#[derive(InitSpace)]
 pub struct ChitFund {
     // Admin/Config data
     pub creator: Pubkey,
@@ -31,7 +31,7 @@ pub struct ChitFund {
 }
 
 #[account]
-#[derive(InitSpace, Debug)]
+#[derive(InitSpace)]
 pub struct Participant {
     // Identity
     pub owner: Pubkey,

@@ -18,7 +18,7 @@ pub struct MakeContribution<'info> {
         bump,
         constraint = chit_fund.is_active @ ChitFundError::ChitFundInactive,
     )]
-    pub chit_fund: Account<'info, ChitFund>,
+    pub chit_fund: Box<Account<'info, ChitFund>>,
 
     #[account(
         mut,
@@ -26,7 +26,7 @@ pub struct MakeContribution<'info> {
         bump,
         constraint = contribution_vault.mint == mint.key() @ ChitFundError::InvalidContributionMint,
     )]
-    pub contribution_vault: InterfaceAccount<'info, TokenAccount>,
+    pub contribution_vault:  Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut, 

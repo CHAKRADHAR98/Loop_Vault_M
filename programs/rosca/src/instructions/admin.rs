@@ -11,7 +11,7 @@ pub struct InitializeChitFund<'info> {
     #[account(mut)]
     pub creator: Signer<'info>,
 
-    pub mint: InterfaceAccount<'info, Mint>,
+    pub mint: Box<InterfaceAccount<'info, Mint>>,
 
     #[account(
         init,
@@ -20,7 +20,7 @@ pub struct InitializeChitFund<'info> {
         seeds = [mint.key().as_ref()],
         bump,
     )]
-    pub chit_fund: Account<'info, ChitFund>,
+    pub chit_fund: Box<Account<'info, ChitFund>>,
 
     #[account(
         init,
@@ -31,7 +31,7 @@ pub struct InitializeChitFund<'info> {
         bump,
 
     )]
-    pub contribution_vault: InterfaceAccount<'info, TokenAccount>,
+    pub contribution_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         init,
@@ -42,7 +42,7 @@ pub struct InitializeChitFund<'info> {
         bump
 
     )]
-    pub collateral_vault: InterfaceAccount<'info, TokenAccount>,
+    pub collateral_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
@@ -97,6 +97,7 @@ pub fn initialize_chit_fund(
     chit_fund.contribution_vault = ctx.accounts.contribution_vault.key();
     chit_fund.collateral_vault = ctx.accounts.collateral_vault.key();
     chit_fund.total_contribution_amount = 0;
+    chit_fund.borrowed_participants = [false; MAX_PARTICIPANTS];
 
     emit!(ChitFundInitialized {
         chit_fund: chit_fund.key(),

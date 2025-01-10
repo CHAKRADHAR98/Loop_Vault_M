@@ -10,6 +10,9 @@ name = "rosca"
 
 [features]
 default = []
+custom-heap = []
+custom-panic = []
+anchor-debug = []
 cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
