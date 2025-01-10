@@ -18,7 +18,6 @@ pub struct WithdrawCollateral<'info> {
         constraint = !chit_fund.is_active @ ChitFundError::ChitFundActive, // Can only withdraw after chit fund ends
     )]
     pub chit_fund: Box<Account<'info, ChitFund>>,
-
     #[account(
         mut,
         seeds = [b"collateral_vault", mint.key().as_ref()],
@@ -34,7 +33,7 @@ pub struct WithdrawCollateral<'info> {
         constraint = participant.owner == user.key() @ ChitFundError::Unauthorized,
         constraint = participant.has_borrowed @ ChitFundError::WithdrawBeforeBorrowing, // Can only withdraw after borrowing
     )]
-    pub participant: Account<'info, Participant>,
+    pub participant: Box<Account<'info, Participant>>,
 
     #[account(
         mut,

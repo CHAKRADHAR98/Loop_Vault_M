@@ -37,7 +37,7 @@ pub struct DisburseFunds<'info> {
         constraint = participant.owner == user.key() @ ChitFundError::Unauthorized,
         constraint = !participant.has_borrowed @ ChitFundError::AlreadyBorrowed,
     )]
-    pub participant: Account<'info, Participant>,
+    pub participant: Box<Account<'info, Participant>>,
 
     #[account(
         mut,
@@ -45,7 +45,7 @@ pub struct DisburseFunds<'info> {
         associated_token::authority = user,
         associated_token::token_program = token_program,
     )]
-    pub user_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub user_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
 
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,

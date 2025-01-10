@@ -20,7 +20,7 @@ pub struct JoinChitFund<'info> {
         constraint = chit_fund.is_active @ ChitFundError::ChitFundInactive,
         constraint = chit_fund.participants_count < chit_fund.max_participants @ ChitFundError::MaxParticipantsReached,
     )]
-    pub chit_fund: Account<'info, ChitFund>,
+    pub chit_fund: Box<Account<'info, ChitFund>>,
 
 
     #[account(
@@ -29,7 +29,7 @@ pub struct JoinChitFund<'info> {
         bump,
         constraint = collateral_vault.mint == mint.key() @ ChitFundError::InvalidContributionMint,
     )]
-    pub collateral_vault: InterfaceAccount<'info, TokenAccount>,
+    pub collateral_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         init,
@@ -38,7 +38,7 @@ pub struct JoinChitFund<'info> {
         seeds = [user.key().as_ref()],
         bump
     )]
-    pub participant: Account<'info, Participant>,
+    pub participant: Box<Account<'info, Participant>>,
 
     #[account(
         mut,
@@ -47,7 +47,7 @@ pub struct JoinChitFund<'info> {
         associated_token::token_program = token_program,
         constraint = user_token_account.amount >= chit_fund.collateral_requirement @ ChitFundError::InsufficientCollateral,
     )]
-    pub user_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub user_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
 
 
     pub token_program: Interface<'info, TokenInterface>,

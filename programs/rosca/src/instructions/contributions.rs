@@ -35,7 +35,7 @@ pub struct MakeContribution<'info> {
         constraint = participant.owner == user.key() @ ChitFundError::Unauthorized,
         constraint = !participant.contributions[chit_fund.current_cycle as usize] @ ChitFundError::ContributionAlreadyMade,
     )]
-    pub participant: Account<'info, Participant>,
+    pub participant: Box<Account<'info, Participant>>,
 
     #[account(
         mut,
@@ -44,7 +44,7 @@ pub struct MakeContribution<'info> {
         associated_token::token_program = token_program,
         constraint = user_token_account.amount >= chit_fund.contribution_amount @ ChitFundError::InsufficientFunds,
     )]
-    pub user_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub user_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
 
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
