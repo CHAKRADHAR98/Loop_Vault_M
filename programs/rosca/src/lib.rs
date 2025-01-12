@@ -32,9 +32,6 @@ pub mod rosca {
     pub fn withdraw(ctx: Context<WithdrawCollateral>) -> Result<()> {
         withdraw_collateral(ctx)
     }
-
-    
-
 }
 
 

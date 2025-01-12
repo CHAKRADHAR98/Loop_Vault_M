@@ -2,17 +2,35 @@ use anchor_lang::prelude::*;
 use anchor_spl::token_interface::TokenInterface;
 use anchor_spl::token_interface::{Mint, TokenAccount};
 
-use crate::state::ChitFund;
-use crate::error::*;
 use crate::constants::*;
+use crate::error::*;
+use crate::state::ChitFund;
 
 #[derive(Accounts)]
 pub struct InitializeChitFund<'info> {
     #[account(mut)]
-    pub creator: Signer<'info>,
-
-    pub mint: Box<InterfaceAccount<'info, Mint>>,
-
+    pub creator: Signer<'info>,  
+    #[account(
+        init,
+        token::mint = mint,
+        token::authority = contribution_vault,
+        payer = creator,
+        seeds = [b"contribution_vault", mint.key().as_ref()],
+        bump,
+        
+    )]
+    pub contribution_vault: Box<InterfaceAccount<'info, TokenAccount>>,
+    
+    #[account(
+        init,
+        token::mint = mint,
+        token::authority = collateral_vault,
+        payer = creator,
+        seeds = [b"collateral_vault", mint.key().as_ref()],
+        bump
+        
+    )]
+    pub collateral_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(
         init,
         payer = creator,
@@ -21,33 +39,10 @@ pub struct InitializeChitFund<'info> {
         bump,
     )]
     pub chit_fund: Box<Account<'info, ChitFund>>,
-
-    #[account(
-        init,
-        token::mint = mint,
-        token::authority = contribution_vault,
-        payer = creator,
-        seeds = [b"contribution_vault", mint.key().as_ref()],
-        bump,
-
-    )]
-    pub contribution_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-
-    #[account(
-        init,
-        token::mint = mint,
-        token::authority = collateral_vault,
-        payer = creator,
-        seeds = [b"collateral_vault", mint.key().as_ref()],
-        bump
-
-    )]
-    pub collateral_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-
+    pub mint: Box<InterfaceAccount<'info, Mint>>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
-
 
 pub fn initialize_chit_fund(
     ctx: Context<InitializeChitFund>,
@@ -73,7 +68,7 @@ pub fn initialize_chit_fund(
     );
 
     let chit_fund = &mut ctx.accounts.chit_fund;
-    
+
     // Admin/Config data
     chit_fund.creator = ctx.accounts.creator.key();
     chit_fund.mint_address = ctx.accounts.mint.key();
@@ -110,7 +105,6 @@ pub fn initialize_chit_fund(
 
     Ok(())
 }
-
 
 #[event]
 pub struct ChitFundInitialized {
