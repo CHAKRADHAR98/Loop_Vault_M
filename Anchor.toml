@@ -11,7 +11,7 @@ rosca = "6AQ26gghMkL77dWnoGhxX5iW1sU13zKVA4yy1fs8C4qr"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "Devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
